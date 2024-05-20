@@ -1,0 +1,23 @@
+.filebar {
+    width: 300px;
+    background-color: #282c34;
+    color: white;
+    height: 100vh;
+    padding: 10px;
+    font-family: 'Source Sans Pro', sans-serif
+  }
+  
+  .filebar ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .filebar-item {
+    padding: 10px;
+    cursor: pointer;
+  }
+  
+  .filebar-item:hover {
+    background-color: #3a3f47;
+  }
+  

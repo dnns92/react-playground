@@ -6,9 +6,8 @@ import ReactFlow, {
   useReactFlow,
   ReactFlowProvider,
 } from 'reactflow';
- 
 import 'reactflow/dist/style.css';
- 
+
 import './index.css';
 
 const initialNodes = [
@@ -23,7 +22,6 @@ const initialNodes = [
 let id = 1;
 const getId = () => `${id++}`;
 
-
 const AddNodeOnEdgeDrop = () => {
   const reactFlowWrapper = useRef(null);
   const connectingNodeId = useRef(null);
@@ -36,13 +34,11 @@ const AddNodeOnEdgeDrop = () => {
       connectingNodeId.current = null;
       setEdges((eds) => addEdge(params, eds))
     },
-     // eslint-disable-next-line
     [],
   );
 
   const onConnectStart = useCallback((_, { nodeId }) => {
     connectingNodeId.current = nodeId;
-    // eslint-disable-next-line
   }, []);
 
   const onConnectEnd = useCallback(
@@ -70,7 +66,6 @@ const AddNodeOnEdgeDrop = () => {
         );
       }
     },
-    // eslint-disable-next-line
     [screenToFlowPosition],
   );
 
@@ -92,9 +87,8 @@ const AddNodeOnEdgeDrop = () => {
   );
 };
 
-// eslint-disable-next-line
-export default index => (
-<ReactFlowProvider>
+export default () => (
+  <ReactFlowProvider>
     <AddNodeOnEdgeDrop />
   </ReactFlowProvider>
 );
