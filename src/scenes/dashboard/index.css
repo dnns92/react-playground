@@ -41,6 +41,10 @@
   height: 100%;
 }
 
+.dndflow .dndnode.save {
+  border-color: #0041d0;
+}
+
 .dndflow .selectall {
   margin-top: 10px;
 }
