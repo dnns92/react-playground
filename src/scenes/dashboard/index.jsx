@@ -1,94 +1,97 @@
-import React, { useCallback, useRef } from 'react';
+import React, { useState, useRef, useCallback } from 'react';
 import ReactFlow, {
+  ReactFlowProvider,
+  addEdge,
   useNodesState,
   useEdgesState,
-  addEdge,
-  useReactFlow,
-  ReactFlowProvider,
+  Controls,
 } from 'reactflow';
 import 'reactflow/dist/style.css';
+
+import Lowbar from './Lowbar';
 
 import './index.css';
 
 const initialNodes = [
   {
-    id: '0',
+    id: '1',
     type: 'input',
-    data: { label: 'Node' },
-    position: { x: 0, y: 50 },
+    data: { label: 'input node' },
+    position: { x: 250, y: 5 },
   },
 ];
 
-let id = 1;
-const getId = () => `${id++}`;
+let id = 0;
+const getId = () => `dndnode_${id++}`;
 
-const AddNodeOnEdgeDrop = () => {
+const DnDFlow = () => {
   const reactFlowWrapper = useRef(null);
-  const connectingNodeId = useRef(null);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState([]);
-  const { screenToFlowPosition } = useReactFlow();
+  const [reactFlowInstance, setReactFlowInstance] = useState(null);
+
   const onConnect = useCallback(
-    (params) => {
-      // reset the start node on connections
-      connectingNodeId.current = null;
-      setEdges((eds) => addEdge(params, eds))
-    },
+    (params) => setEdges((eds) => addEdge(params, eds)),
     [],
   );
 
-  const onConnectStart = useCallback((_, { nodeId }) => {
-    connectingNodeId.current = nodeId;
+  const onDragOver = useCallback((event) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
   }, []);
 
-  const onConnectEnd = useCallback(
+  const onDrop = useCallback(
     (event) => {
-      if (!connectingNodeId.current) return;
+      event.preventDefault();
 
-      const targetIsPane = event.target.classList.contains('react-flow__pane');
+      const type = event.dataTransfer.getData('application/reactflow');
 
-      if (targetIsPane) {
-        // we need to remove the wrapper bounds, in order to get the correct position
-        const id = getId();
-        const newNode = {
-          id,
-          position: screenToFlowPosition({
-            x: event.clientX,
-            y: event.clientY,
-          }),
-          data: { label: `Node ${id}` },
-          origin: [0.5, 0.0],
-        };
-
-        setNodes((nds) => nds.concat(newNode));
-        setEdges((eds) =>
-          eds.concat({ id, source: connectingNodeId.current, target: id }),
-        );
+      // check if the dropped element is valid
+      if (typeof type === 'undefined' || !type) {
+        return;
       }
+
+      // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
+      // and you don't need to subtract the reactFlowBounds.left/top anymore
+      // details: https://reactflow.dev/whats-new/2023-11-10
+      const position = reactFlowInstance.screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+      const newNode = {
+        id: getId(),
+        type,
+        position,
+        data: { label: `${type} node` },
+      };
+
+      setNodes((nds) => nds.concat(newNode));
     },
-    [screenToFlowPosition],
+    [reactFlowInstance],
   );
 
   return (
-    <div className="wrapper" ref={reactFlowWrapper}>
-      <ReactFlow
-        nodes={nodes}
-        edges={edges}
-        onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
-        onConnect={onConnect}
-        onConnectStart={onConnectStart}
-        onConnectEnd={onConnectEnd}
-        fitView
-        fitViewOptions={{ padding: 2 }}
-        nodeOrigin={[0.5, 0]}
-      />
+    <div className="dndflow">
+      <ReactFlowProvider>
+        <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+          <ReactFlow
+            nodes={nodes}
+            edges={edges}
+            onNodesChange={onNodesChange}
+            onEdgesChange={onEdgesChange}
+            onConnect={onConnect}
+            onInit={setReactFlowInstance}
+            onDrop={onDrop}
+            onDragOver={onDragOver}
+            fitView
+          >
+            <Controls />
+          </ReactFlow>
+        </div>
+        <Lowbar />
+      </ReactFlowProvider>
     </div>
   );
 };
 
-export default () => (
-  <ReactFlowProvider>
-    <AddNodeOnEdgeDrop />
-  </ReactFlowProvider>
-);
+export default DnDFlow;

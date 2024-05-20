@@ -84,17 +84,13 @@ const Sidebar = () => {
                 >
                   Ed Roh
                 </Typography>
-                <Typography variant="h5" color={colors.greenAccent[500]}>
-                  VP Fancy Admin
-                </Typography>
               </Box>
             </Box>
           )}
 
           <Box paddingLeft={isCollapsed ? undefined : "10%"}>
             <Item
-              title="Reliability Diagram
-"
+              title="Reliability Diagram"
               to="/"
               icon={<HomeOutlinedIcon />}
               selected={selected}

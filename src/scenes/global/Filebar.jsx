@@ -12,7 +12,7 @@ function Filebar(props) {
   return (
     <ListItem style={style} key={index} component="div" disablePadding>
       <ListItemButton>
-        <ListItemText primary={`Item ${index + 1}`} />
+        <ListItemText primary={`Component ${index + 1}`} />
       </ListItemButton>
     </ListItem>
   );
@@ -25,10 +25,10 @@ export default function VirtualizedList() {
       sx={{ width: '100%', height: '100%', maxWidth: 360, bgcolor: 'background.paper' }}
     >
       <FixedSizeList
-        height={1250}
+        height={650}
         width={360}
-        itemSize={46}
-        itemCount={200}
+        itemSize={30}
+        itemCount={50}
         overscanCount={5}
       >
         {Filebar}
